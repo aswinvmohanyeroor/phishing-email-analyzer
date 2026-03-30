@@ -1,0 +1,16 @@
+From: "Fake Bank" <support@fakebank.com>
+To: victim@test.com
+Subject: Urgent! Verify your account
+Date: Mon, 30 Mar 2026 10:00:00 +0800
+Reply-To: attacker@gmail.com
+Return-Path: bounce@fakebank-mail.com
+Content-Type: text/plain; charset="utf-8"
+
+Dear customer,
+
+Your account has been suspended.
+Please click here immediately:
+http://fake-login-example.com/verify
+
+Regards,
+Fake Bank
