@@ -15,20 +15,36 @@ mismatch = check_domain_mismatch(
 keywords = suspicious_keywords(body)
 result = score_email(mismatch, urls, keywords)
 
-print("HEADERS:")
-print(headers)
+print("========== PHISHING EMAIL ANALYZER ==========\n")
 
-print("\nBODY:")
+print("From:", headers["from"])
+print("To:", headers["to"])
+print("Subject:", headers["subject"])
+print("Date:", headers["date"])
+print("Reply-To:", headers["reply_to"])
+print("Return-Path:", headers["return_path"])
+
+print("\n---------- BODY ----------")
 print(body)
 
-print("\nURLS:")
-print(urls)
+print("\n---------- URLS FOUND ----------")
+for item in urls:
+    print("-", item["url"], "| Domain:", item["domain"])
 
-print("\nDOMAIN CHECKS:")
-print(mismatch)
+print("\n---------- DOMAIN CHECK ----------")
+print("From domain:", mismatch["from_domain"])
+print("Reply-To domain:", mismatch["reply_domain"])
+print("Return-Path domain:", mismatch["return_domain"])
+print("Reply-To mismatch:", mismatch["reply_to_mismatch"])
+print("Return-Path mismatch:", mismatch["return_path_mismatch"])
 
-print("\nSUSPICIOUS KEYWORDS:")
-print(keywords)
+print("\n---------- SUSPICIOUS WORDS ----------")
+for word in keywords:
+    print("-", word)
 
-print("\nFINAL RESULT:")
-print(result)
+print("\n---------- FINAL RESULT ----------")
+print("Risk Score:", result["score"])
+print("Verdict:", result["verdict"])
+print("Reasons:")
+for reason in result["reasons"]:
+    print("-", reason)
