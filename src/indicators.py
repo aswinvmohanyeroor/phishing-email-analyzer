@@ -47,3 +47,35 @@ def suspicious_keywords(text):
             found.append(word)
 
     return found
+def score_email(mismatch, urls, keywords):
+    score = 0
+    reasons = []
+
+    if mismatch["reply_to_mismatch"]:
+        score += 30
+        reasons.append("Reply-To domain is different from From domain")
+
+    if mismatch["return_path_mismatch"]:
+        score += 20
+        reasons.append("Return-Path domain is different from From domain")
+
+    if len(urls) > 0:
+        score += 20
+        reasons.append("Email contains link(s)")
+
+    if len(keywords) >= 3:
+        score += 20
+        reasons.append("Multiple suspicious words found")
+
+    if score >= 60:
+        verdict = "HIGH"
+    elif score >= 30:
+        verdict = "MEDIUM"
+    else:
+        verdict = "LOW"
+
+    return {
+        "score": score,
+        "verdict": verdict,
+        "reasons": reasons
+    }

@@ -1,5 +1,5 @@
 from parser import load_email, get_basic_headers, extract_body, extract_urls
-from indicators import check_domain_mismatch, suspicious_keywords
+from indicators import check_domain_mismatch, suspicious_keywords, score_email
 
 file_path = "samples/sample1.eml"
 
@@ -13,6 +13,7 @@ mismatch = check_domain_mismatch(
     headers["return_path"]
 )
 keywords = suspicious_keywords(body)
+result = score_email(mismatch, urls, keywords)
 
 print("HEADERS:")
 print(headers)
@@ -28,3 +29,6 @@ print(mismatch)
 
 print("\nSUSPICIOUS KEYWORDS:")
 print(keywords)
+
+print("\nFINAL RESULT:")
+print(result)
