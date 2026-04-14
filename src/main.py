@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 from email.utils import parseaddr
+
 from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments
-from reporter import save_json_report, save_text_report
 from indicators import (
     get_authentication_results,
     check_domain_mismatch,
@@ -13,7 +13,7 @@ from indicators import (
     score_email
 )
 from dns_checks import get_spf_record, get_dmarc_record, resolve_mx
-from reporter import save_json_report
+from reporter import save_json_report, save_text_report
 
 
 def get_sender_domain(from_header):
@@ -21,6 +21,15 @@ def get_sender_domain(from_header):
     if "@" in addr:
         return addr.split("@", 1)[1].lower()
     return ""
+
+
+def collect_eml_files(folder_path, recursive=False):
+    folder = Path(folder_path)
+    if not folder.exists() or not folder.is_dir():
+        raise ValueError(f"Folder not found: {folder_path}")
+
+    pattern = "**/*.eml" if recursive else "*.eml"
+    return [str(p) for p in sorted(folder.glob(pattern)) if p.is_file()]
 
 
 def analyze_email(file_path, output_dir):
@@ -100,20 +109,47 @@ def analyze_email(file_path, output_dir):
     print("Saved JSON:", json_output_file)
     print("Saved TXT:", txt_output_file)
 
+    if scoring["reasons"]:
+        print("Reasons:")
+        for reason in scoring["reasons"]:
+            print("-", reason)
+
+    return report
+
 
 def main():
     parser = argparse.ArgumentParser(description="Phishing Email Analyzer")
-    parser.add_argument("files", nargs="+", help="One or more .eml files to analyze")
-    parser.add_argument("-o", "--output", default="output", help="Output folder for JSON reports")
+    parser.add_argument("files", nargs="*", help="One or more .eml files to analyze")
+    parser.add_argument("--folder", help="Analyze all .eml files in a folder")
+    parser.add_argument("--recursive", action="store_true", help="Search subfolders too")
+    parser.add_argument("-o", "--output", default="output", help="Output folder for reports")
     args = parser.parse_args()
 
-    for file_path in args.files:
+    files_to_analyze = []
+
+    if args.folder:
+        files_to_analyze.extend(collect_eml_files(args.folder, args.recursive))
+
+    if args.files:
+        files_to_analyze.extend(args.files)
+
+    files_to_analyze = list(dict.fromkeys(files_to_analyze))
+
+    if not files_to_analyze:
+        parser.error("Provide one or more .eml files, or use --folder")
+
+    reports = []
+
+    for file_path in files_to_analyze:
         try:
-            analyze_email(file_path, args.output)
+            report = analyze_email(file_path, args.output)
+            reports.append(report)
         except Exception as e:
             print("\n========================================")
             print("File:", file_path)
             print("Error:", str(e))
+
+    print("\nCompleted analysis for", len(reports), "file(s)")
 
 
 if __name__ == "__main__":
