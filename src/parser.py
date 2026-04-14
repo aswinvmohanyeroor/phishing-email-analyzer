@@ -5,7 +5,7 @@ import re
 import hashlib
 import html as html_lib
 from urllib.parse import urlparse
-
+ANCHOR_REGEX = r'<a\s+[^>]*href=["\'](https?://[^"\']+)["\'][^>]*>(.*?)</a>'
 
 URL_REGEX = r"https?://[^\s\"'<>]+"
 HREF_REGEX = r'href=["\'](https?://[^"\']+)["\']'
@@ -143,3 +143,14 @@ def extract_attachments(msg):
         })
 
     return attachments
+def extract_html_links(html):
+    results = []
+
+    for href, raw_text in re.findall(ANCHOR_REGEX, html or "", flags=re.IGNORECASE | re.DOTALL):
+        visible_text = strip_html_tags(raw_text)
+        results.append({
+            "href": href,
+            "visible_text": visible_text
+        })
+
+    return results

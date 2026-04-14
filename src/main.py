@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 from email.utils import parseaddr
 from reporter import save_json_report, save_text_report, save_csv_summary
-from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments
+from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments, check_hidden_link_text_mismatch
 from indicators import (
     get_authentication_results,
     check_domain_mismatch,
@@ -38,7 +38,8 @@ def analyze_email(file_path, output_dir):
     bodies = extract_bodies(msg)
     urls = extract_urls(bodies["text"], bodies["html"])
     attachments = extract_attachments(msg)
-
+    html_links = extract_html_links(bodies["html"])
+    hidden_link_mismatches = check_hidden_link_text_mismatch(html_links)
     auth = get_authentication_results(msg)
     mismatch = check_domain_mismatch(
         headers["from"],
@@ -65,6 +66,7 @@ def analyze_email(file_path, output_dir):
         attachment_risk=attachment_risk,
         url_signals=url_signals,
         header_issues=header_issues,
+        hidden_link_mismatches=hidden_link_mismatches,
         has_html=bool(bodies["html"])
     )
 
@@ -90,7 +92,10 @@ def analyze_email(file_path, output_dir):
         "header_issues": header_issues,
         "keyword_hits": keyword_hits,
         "domain_checks": mismatch,
-        "assessment": scoring
+        "html_links": html_links,
+        "hidden_link_mismatches": hidden_link_mismatches,
+        "assessment": scoring,
+
     }
 
     input_path = Path(file_path)

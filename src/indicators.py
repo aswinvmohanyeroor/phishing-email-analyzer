@@ -155,7 +155,7 @@ def check_header_signals(headers):
     return issues
 
 
-def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals, header_issues, has_html):
+def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals, header_issues, hidden_link_mismatches, has_html):
     score = 0
     reasons = []
 
@@ -223,6 +223,10 @@ def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals
         score += 10
         reasons.append("Some expected headers are missing")
 
+    if hidden_link_mismatches:
+        score += 20
+        reasons.append("Visible link text differs from actual destination")
+
     if has_html and not urls:
         score += 5
         reasons.append("HTML email with limited visible context")
@@ -239,3 +243,27 @@ def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals
         "verdict": verdict,
         "reasons": reasons
     }
+def extract_visible_domain(text):
+    value = (text or "").strip().lower()
+    value = re.sub(r"^https?://", "", value)
+    value = value.split("/")[0]
+    if "." in value and " " not in value:
+        return value
+    return ""
+def check_hidden_link_text_mismatch(html_links):
+    mismatches = []
+
+    for item in html_links:
+        visible_domain = extract_visible_domain(item.get("visible_text", ""))
+        actual_domain = (urlparse(item.get("href", "")).hostname or "").lower()
+
+        if visible_domain and actual_domain:
+            if visible_domain != actual_domain and not actual_domain.endswith("." + visible_domain):
+                mismatches.append({
+                    "visible_text": item.get("visible_text", ""),
+                    "visible_domain": visible_domain,
+                    "href": item.get("href", ""),
+                    "actual_domain": actual_domain
+                })
+
+    return mismatches
