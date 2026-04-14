@@ -1,0 +1,83 @@
+{
+  "file_analyzed": "samples\\suspicious_sample.eml",
+  "headers": {
+    "from": "Fake Bank <support@fakebank.com>",
+    "to": "victim@test.com",
+    "subject": "Urgent! Verify your account immediately",
+    "date": "Mon, 30 Mar 2026 10:00:00 +0800",
+    "reply_to": "attacker@gmail.com",
+    "return_path": "bounce@fakebank-mail.com",
+    "message_id": "",
+    "content_type": "text/plain"
+  },
+  "sender_domain": "fakebank.com",
+  "authentication": {
+    "spf": "unknown",
+    "dkim": "unknown",
+    "dmarc": "unknown",
+    "raw": []
+  },
+  "dns": {
+    "spf_record": "v=spf1 ip6:fdcf:abda:4154::/48 -all",
+    "dmarc_record": null,
+    "mx_records": [
+      "park-mx.above.com"
+    ]
+  },
+  "bodies": {
+    "text": "Dear customer,\n\nYour account has been suspended.\nPlease click here immediately:\nhttp://fake-login-example.com/verify\n\nRegards,\nFake Bank",
+    "html_present": false,
+    "html_preview": ""
+  },
+  "urls": [
+    {
+      "url": "http://fake-login-example.com/verify",
+      "domain": "fake-login-example.com"
+    }
+  ],
+  "url_signals": [
+    {
+      "url": "http://fake-login-example.com/verify",
+      "domain": "fake-login-example.com",
+      "domain_mismatch_with_sender": true,
+      "uses_ip_address": false,
+      "uses_shortener": false,
+      "contains_punycode": false
+    }
+  ],
+  "attachments": [],
+  "attachment_risk": {
+    "risky_attachments": [],
+    "double_extension_files": []
+  },
+  "header_issues": [
+    "Missing Message-ID header"
+  ],
+  "keyword_hits": [
+    "urgent",
+    "verify",
+    "suspended",
+    "login",
+    "immediately",
+    "click here"
+  ],
+  "domain_checks": {
+    "from_domain": "fakebank.com",
+    "reply_domain": "gmail.com",
+    "return_domain": "fakebank-mail.com",
+    "reply_to_mismatch": true,
+    "return_path_mismatch": true
+  },
+  "assessment": {
+    "score": 85,
+    "verdict": "HIGH",
+    "reasons": [
+      "Reply-To domain differs from From domain",
+      "Return-Path domain differs from From domain",
+      "Email contains URL(s)",
+      "Multiple suspicious keywords found",
+      "URL domain differs from sender domain",
+      "Some expected headers are missing"
+    ]
+  }
+}

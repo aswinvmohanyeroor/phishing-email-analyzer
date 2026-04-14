@@ -1,69 +1,123 @@
-from parser import load_email, get_basic_headers, extract_body, extract_urls
-from indicators import check_domain_mismatch, suspicious_keywords, score_email
-from dns_checks import get_spf_record, get_dmarc_record
+import argparse
+from pathlib import Path
 from email.utils import parseaddr
 
+from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments
+from indicators import (
+    get_authentication_results,
+    check_domain_mismatch,
+    suspicious_keywords,
+    check_attachment_risk,
+    check_url_signals,
+    check_header_signals,
+    score_email
+)
+from dns_checks import get_spf_record, get_dmarc_record, resolve_mx
+from reporter import save_json_report
+
+
 def get_sender_domain(from_header):
-    _, addr = parseaddr(from_header)
+    _, addr = parseaddr(from_header or "")
     if "@" in addr:
         return addr.split("@", 1)[1].lower()
     return ""
 
-file_path = "samples/sample1.eml"
 
-msg = load_email(file_path)
-headers = get_basic_headers(msg)
-body = extract_body(msg)
-urls = extract_urls(body)
+def analyze_email(file_path, output_dir):
+    msg = load_email(file_path)
+    headers = get_basic_headers(msg)
+    bodies = extract_bodies(msg)
+    urls = extract_urls(bodies["text"], bodies["html"])
+    attachments = extract_attachments(msg)
 
-mismatch = check_domain_mismatch(
-    headers["from"],
-    headers["reply_to"],
-    headers["return_path"]
-)
+    auth = get_authentication_results(msg)
+    mismatch = check_domain_mismatch(
+        headers["from"],
+        headers["reply_to"],
+        headers["return_path"]
+    )
 
-keywords = suspicious_keywords(body)
-result = score_email(mismatch, urls, keywords)
+    keyword_hits = suspicious_keywords(bodies["text"], headers["subject"])
+    attachment_risk = check_attachment_risk(attachments)
 
-sender_domain = get_sender_domain(headers["from"])
-spf_record = get_spf_record(sender_domain) if sender_domain else None
-dmarc_record = get_dmarc_record(sender_domain) if sender_domain else None
+    sender_domain = get_sender_domain(headers["from"])
+    url_signals = check_url_signals(urls, sender_domain)
+    header_issues = check_header_signals(headers)
 
-print("========== PHISHING EMAIL ANALYZER ==========\n")
+    spf_record = get_spf_record(sender_domain) if sender_domain else None
+    dmarc_record = get_dmarc_record(sender_domain) if sender_domain else None
+    mx_records = resolve_mx(sender_domain) if sender_domain else []
 
-print("From:", headers["from"])
-print("To:", headers["to"])
-print("Subject:", headers["subject"])
-print("Date:", headers["date"])
-print("Reply-To:", headers["reply_to"])
-print("Return-Path:", headers["return_path"])
+    scoring = score_email(
+        auth=auth,
+        mismatch=mismatch,
+        urls=urls,
+        keyword_hits=keyword_hits,
+        attachment_risk=attachment_risk,
+        url_signals=url_signals,
+        header_issues=header_issues,
+        has_html=bool(bodies["html"])
+    )
 
-print("\n---------- BODY ----------")
-print(body)
+    report = {
+        "file_analyzed": str(file_path),
+        "headers": headers,
+        "sender_domain": sender_domain,
+        "authentication": auth,
+        "dns": {
+            "spf_record": spf_record,
+            "dmarc_record": dmarc_record,
+            "mx_records": mx_records
+        },
+        "bodies": {
+            "text": bodies["text"],
+            "html_present": bool(bodies["html"]),
+            "html_preview": bodies["html"][:500]
+        },
+        "urls": urls,
+        "url_signals": url_signals,
+        "attachments": attachments,
+        "attachment_risk": attachment_risk,
+        "header_issues": header_issues,
+        "keyword_hits": keyword_hits,
+        "domain_checks": mismatch,
+        "assessment": scoring
+    }
 
-print("\n---------- URLS FOUND ----------")
-for item in urls:
-    print("-", item["url"], "| Domain:", item["domain"])
+    input_path = Path(file_path)
+    output_file = Path(output_dir) / f"{input_path.stem}_report.json"
+    save_json_report(report, output_file)
 
-print("\n---------- DOMAIN CHECK ----------")
-print("From domain:", mismatch["from_domain"])
-print("Reply-To domain:", mismatch["reply_domain"])
-print("Return-Path domain:", mismatch["return_domain"])
-print("Reply-To mismatch:", mismatch["reply_to_mismatch"])
-print("Return-Path mismatch:", mismatch["return_path_mismatch"])
+    print("\n========================================")
+    print("File:", file_path)
+    print("Subject:", headers["subject"])
+    print("From:", headers["from"])
+    print("Verdict:", scoring["verdict"])
+    print("Risk Score:", scoring["score"])
+    print("Saved JSON:", output_file)
 
-print("\n---------- SUSPICIOUS WORDS ----------")
-for word in keywords:
-    print("-", word)
+    if scoring["reasons"]:
+        print("Reasons:")
+        for reason in scoring["reasons"]:
+            print("-", reason)
 
-print("\n---------- DNS CHECKS ----------")
-print("Sender domain:", sender_domain)
-print("SPF record:", spf_record)
-print("DMARC record:", dmarc_record)
+    return report
 
-print("\n---------- FINAL RESULT ----------")
-print("Risk Score:", result["score"])
-print("Verdict:", result["verdict"])
-print("Reasons:")
-for reason in result["reasons"]:
-    print("-", reason)
+
+def main():
+    parser = argparse.ArgumentParser(description="Phishing Email Analyzer")
+    parser.add_argument("files", nargs="+", help="One or more .eml files to analyze")
+    parser.add_argument("-o", "--output", default="output", help="Output folder for JSON reports")
+    args = parser.parse_args()
+
+    for file_path in args.files:
+        try:
+            analyze_email(file_path, args.output)
+        except Exception as e:
+            print("\n========================================")
+            print("File:", file_path)
+            print("Error:", str(e))
+
+
+if __name__ == "__main__":
+    main()

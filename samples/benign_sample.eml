@@ -1,0 +1,14 @@
+From: "HR Team" <hr@example.com>
+To: employee@test.com
+Subject: Welcome to the company
+Date: Mon, 30 Mar 2026 10:00:00 +0800
+Message-ID: <12345@example.com>
+Content-Type: text/plain; charset="utf-8"
+
+Hello,
+
+Welcome to the company.
+Please read the onboarding guide next week.
+
+Regards,
+HR Team
