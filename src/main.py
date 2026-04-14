@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 from email.utils import parseaddr
-
 from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments
+from reporter import save_json_report, save_text_report
 from indicators import (
     get_authentication_results,
     check_domain_mismatch,
@@ -85,8 +85,11 @@ def analyze_email(file_path, output_dir):
     }
 
     input_path = Path(file_path)
-    output_file = Path(output_dir) / f"{input_path.stem}_report.json"
-    save_json_report(report, output_file)
+    json_output_file = Path(output_dir) / f"{input_path.stem}_report.json"
+    txt_output_file = Path(output_dir) / f"{input_path.stem}_report.txt"
+
+    save_json_report(report, json_output_file)
+    save_text_report(report, txt_output_file)
 
     print("\n========================================")
     print("File:", file_path)
@@ -94,14 +97,8 @@ def analyze_email(file_path, output_dir):
     print("From:", headers["from"])
     print("Verdict:", scoring["verdict"])
     print("Risk Score:", scoring["score"])
-    print("Saved JSON:", output_file)
-
-    if scoring["reasons"]:
-        print("Reasons:")
-        for reason in scoring["reasons"]:
-            print("-", reason)
-
-    return report
+    print("Saved JSON:", json_output_file)
+    print("Saved TXT:", txt_output_file)
 
 
 def main():
