@@ -1,0 +1,56 @@
+{
+  "file_analyzed": "samples\\html_phish_sample.eml",
+  "headers": {
+    "from": "",
+    "to": "",
+    "subject": "",
+    "date": "",
+    "reply_to": "",
+    "return_path": "",
+    "message_id": "",
+    "content_type": "text/plain"
+  },
+  "sender_domain": "",
+  "authentication": {
+    "spf": "unknown",
+    "dkim": "unknown",
+    "dmarc": "unknown",
+    "raw": []
+  },
+  "dns": {
+    "spf_record": null,
+    "dmarc_record": null,
+    "mx_records": []
+  },
+  "bodies": {
+    "text": "",
+    "html_present": false,
+    "html_preview": ""
+  },
+  "urls": [],
+  "url_signals": [],
+  "attachments": [],
+  "attachment_risk": {
+    "risky_attachments": [],
+    "double_extension_files": []
+  },
+  "header_issues": [
+    "Missing Message-ID header",
+    "Missing Date header"
+  ],
+  "keyword_hits": [],
+  "domain_checks": {
+    "from_domain": "",
+    "reply_domain": "",
+    "return_domain": "",
+    "reply_to_mismatch": false,
+    "return_path_mismatch": false
+  },
+  "assessment": {
+    "score": 10,
+    "verdict": "LOW",
+    "reasons": [
+      "Some expected headers are missing"
+    ]
+  }
+}

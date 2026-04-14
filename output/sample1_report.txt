@@ -1,0 +1,34 @@
+========== PHISHING EMAIL ANALYZER ==========
+File: samples\sample1.eml
+Subject: Urgent! Verify your account
+From: Fake Bank <support@fakebank.com>
+To: victim@test.com
+Date: Mon, 30 Mar 2026 10:00:00 +0800
+Reply-To: attacker@gmail.com
+Return-Path: bounce@fakebank-mail.com
+
+---------- ASSESSMENT ----------
+Risk Score: 85
+Verdict: HIGH
+
+---------- URLS ----------
+- http://fake-login-example.com/verify | domain=fake-login-example.com
+
+---------- ATTACHMENTS ----------
+- None
+
+---------- KEYWORDS ----------
+- urgent
+- verify
+- suspended
+- login
+- immediately
+- click here
+
+---------- REASONS ----------
+- Reply-To domain differs from From domain
+- Return-Path domain differs from From domain
+- Email contains URL(s)
+- Multiple suspicious keywords found
+- URL domain differs from sender domain
+- Some expected headers are missing

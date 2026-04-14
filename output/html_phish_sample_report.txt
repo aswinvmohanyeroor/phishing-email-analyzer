@@ -1,0 +1,24 @@
+========== PHISHING EMAIL ANALYZER ==========
+File: samples\html_phish_sample.eml
+Subject: 
+From: 
+To: 
+Date: 
+Reply-To: 
+Return-Path: 
+
+---------- ASSESSMENT ----------
+Risk Score: 10
+Verdict: LOW
+
+---------- URLS ----------
+- None
+
+---------- ATTACHMENTS ----------
+- None
+
+---------- KEYWORDS ----------
+- None
+
+---------- REASONS ----------
+- Some expected headers are missing

@@ -1,0 +1,53 @@
+{
+  "file_analyzed": "samples\\benign_sample.eml",
+  "headers": {
+    "from": "HR Team <hr@example.com>",
+    "to": "employee@test.com",
+    "subject": "Welcome to the company",
+    "date": "Mon, 30 Mar 2026 10:00:00 +0800",
+    "reply_to": "",
+    "return_path": "",
+    "message_id": "<12345@example.com>",
+    "content_type": "text/plain"
+  },
+  "sender_domain": "example.com",
+  "authentication": {
+    "spf": "unknown",
+    "dkim": "unknown",
+    "dmarc": "unknown",
+    "raw": []
+  },
+  "dns": {
+    "spf_record": "v=spf1 -all",
+    "dmarc_record": "v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s",
+    "mx_records": [
+      ""
+    ]
+  },
+  "bodies": {
+    "text": "Hello,\n\nWelcome to the company.\nPlease read the onboarding guide next week.\n\nRegards,\nHR Team",
+    "html_present": false,
+    "html_preview": ""
+  },
+  "urls": [],
+  "url_signals": [],
+  "attachments": [],
+  "attachment_risk": {
+    "risky_attachments": [],
+    "double_extension_files": []
+  },
+  "header_issues": [],
+  "keyword_hits": [],
+  "domain_checks": {
+    "from_domain": "example.com",
+    "reply_domain": "",
+    "return_domain": "",
+    "reply_to_mismatch": false,
+    "return_path_mismatch": false
+  },
+  "assessment": {
+    "score": 0,
+    "verdict": "LOW",
+    "reasons": []
+  }
+}

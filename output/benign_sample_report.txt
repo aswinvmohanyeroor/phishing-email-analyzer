@@ -1,0 +1,24 @@
+========== PHISHING EMAIL ANALYZER ==========
+File: samples\benign_sample.eml
+Subject: Welcome to the company
+From: HR Team <hr@example.com>
+To: employee@test.com
+Date: Mon, 30 Mar 2026 10:00:00 +0800
+Reply-To: 
+Return-Path: 
+
+---------- ASSESSMENT ----------
+Risk Score: 0
+Verdict: LOW
+
+---------- URLS ----------
+- None
+
+---------- ATTACHMENTS ----------
+- None
+
+---------- KEYWORDS ----------
+- None
+
+---------- REASONS ----------
+- None
