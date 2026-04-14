@@ -1,0 +1,5 @@
+file_analyzed,subject,from,sender_domain,verdict,score,url_count,attachment_count,keyword_count,reason_summary
+samples\benign_sample.eml,Welcome to the company,HR Team <hr@example.com>,example.com,LOW,0,0,0,0,
+samples\html_phish_sample.eml,,,,LOW,10,0,0,0,Some expected headers are missing
+samples\sample1.eml,Urgent! Verify your account,Fake Bank <support@fakebank.com>,fakebank.com,HIGH,85,1,0,6,Reply-To domain differs from From domain | Return-Path domain differs from From domain | Email contains URL(s) | Multiple suspicious keywords found | URL domain differs from sender domain | Some expected headers are missing
+samples\suspicious_sample.eml,Urgent! Verify your account immediately,Fake Bank <support@fakebank.com>,fakebank.com,HIGH,85,1,0,6,Reply-To domain differs from From domain | Return-Path domain differs from From domain | Email contains URL(s) | Multiple suspicious keywords found | URL domain differs from sender domain | Some expected headers are missing

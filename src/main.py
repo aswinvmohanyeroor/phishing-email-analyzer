@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 from email.utils import parseaddr
-
+from reporter import save_json_report, save_text_report, save_csv_summary
 from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments
 from indicators import (
     get_authentication_results,
@@ -150,7 +150,11 @@ def main():
             print("Error:", str(e))
 
     print("\nCompleted analysis for", len(reports), "file(s)")
-
+    
+    if reports:
+        summary_file = Path(args.output) / "analysis_summary.csv"
+        save_csv_summary(reports, summary_file)
+        print("Saved CSV summary:", summary_file)
 
 if __name__ == "__main__":
     main()

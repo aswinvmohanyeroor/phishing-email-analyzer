@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 
@@ -71,3 +72,38 @@ def save_text_report(report, output_file):
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(render_text_report(report), encoding="utf-8")
+    
+def save_csv_summary(reports, output_file):
+    output_path = Path(output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    fieldnames = [
+        "file_analyzed",
+        "subject",
+        "from",
+        "sender_domain",
+        "verdict",
+        "score",
+        "url_count",
+        "attachment_count",
+        "keyword_count",
+        "reason_summary"
+    ]
+
+    with output_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for report in reports:
+            writer.writerow({
+                "file_analyzed": report.get("file_analyzed", ""),
+                "subject": report.get("headers", {}).get("subject", ""),
+                "from": report.get("headers", {}).get("from", ""),
+                "sender_domain": report.get("sender_domain", ""),
+                "verdict": report.get("assessment", {}).get("verdict", ""),
+                "score": report.get("assessment", {}).get("score", 0),
+                "url_count": len(report.get("urls", [])),
+                "attachment_count": len(report.get("attachments", [])),
+                "keyword_count": len(report.get("keyword_hits", [])),
+                "reason_summary": " | ".join(report.get("assessment", {}).get("reasons", []))
+            })
