@@ -50,6 +50,10 @@
     "risky_attachments": [],
     "double_extension_files": []
   },
+  "virustotal": {
+    "enabled": false,
+    "hits": []
+  },
   "header_issues": [
     "Missing Message-ID header"
   ],
@@ -68,6 +72,8 @@
     "reply_to_mismatch": true,
     "return_path_mismatch": true
   },
+  "html_links": [],
+  "hidden_link_mismatches": [],
   "assessment": {
     "score": 85,
     "verdict": "HIGH",

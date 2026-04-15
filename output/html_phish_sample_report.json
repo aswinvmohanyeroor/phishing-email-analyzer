@@ -34,6 +34,10 @@
     "risky_attachments": [],
     "double_extension_files": []
   },
+  "virustotal": {
+    "enabled": false,
+    "hits": []
+  },
   "header_issues": [
     "Missing Message-ID header",
     "Missing Date header"
@@ -46,6 +50,8 @@
     "reply_to_mismatch": false,
     "return_path_mismatch": false
   },
+  "html_links": [],
+  "hidden_link_mismatches": [],
   "assessment": {
     "score": 10,
     "verdict": "LOW",

@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Email Analyzer - HTML Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            background: #f7f9fc;
+            color: #222;
+        }
+        h1 {
+            margin-bottom: 8px;
+        }
+        p {
+            color: #555;
+        }
+        .summary {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .card h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .card span {
+            color: #666;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #f0f3f8;
+        }
+        tr:hover {
+            background: #fafcff;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .high {
+            background: #ffd9d9;
+            color: #a40000;
+        }
+        .medium {
+            background: #fff0c7;
+            color: #8a5a00;
+        }
+        .low {
+            background: #dff5df;
+            color: #176b17;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phishing Email Analyzer Summary</h1>
+    <p>Batch analysis dashboard for all processed .eml files.</p>
+
+    <div class="summary">
+        <div class="card">
+            <h2>4</h2>
+            <span>Total Emails</span>
+        </div>
+        <div class="card">
+            <h2>2</h2>
+            <span>High Risk</span>
+        </div>
+        <div class="card">
+            <h2>0</h2>
+            <span>Medium Risk</span>
+        </div>
+        <div class="card">
+            <h2>2</h2>
+            <span>Low Risk</span>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Subject</th>
+                <th>From</th>
+                <th>Sender Domain</th>
+                <th>Verdict</th>
+                <th>Score</th>
+                <th>URLs</th>
+                <th>Attachments</th>
+                <th>Keywords</th>
+                <th>Reasons</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr>
+            <td>benign_sample.eml</td>
+            <td>Welcome to the company</td>
+            <td>HR Team &lt;hr@example.com&gt;</td>
+            <td>example.com</td>
+            <td><span class="badge low">LOW</span></td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>None</td>
+        </tr>
+        
+        <tr>
+            <td>html_phish_sample.eml</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><span class="badge low">LOW</span></td>
+            <td>10</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>Some expected headers are missing</td>
+        </tr>
+        
+        <tr>
+            <td>sample1.eml</td>
+            <td>Urgent! Verify your account</td>
+            <td>Fake Bank &lt;support@fakebank.com&gt;</td>
+            <td>fakebank.com</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td>85</td>
+            <td>1</td>
+            <td>0</td>
+            <td>6</td>
+            <td>Reply-To domain differs from From domain<br>Return-Path domain differs from From domain<br>Email contains URL(s)<br>Multiple suspicious keywords found<br>URL domain differs from sender domain<br>Some expected headers are missing</td>
+        </tr>
+        
+        <tr>
+            <td>suspicious_sample.eml</td>
+            <td>Urgent! Verify your account immediately</td>
+            <td>Fake Bank &lt;support@fakebank.com&gt;</td>
+            <td>fakebank.com</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td>85</td>
+            <td>1</td>
+            <td>0</td>
+            <td>6</td>
+            <td>Reply-To domain differs from From domain<br>Return-Path domain differs from From domain<br>Email contains URL(s)<br>Multiple suspicious keywords found<br>URL domain differs from sender domain<br>Some expected headers are missing</td>
+        </tr>
+        
+        </tbody>
+    </table>
+</body>
+</html>

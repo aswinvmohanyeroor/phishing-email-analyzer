@@ -36,6 +36,10 @@
     "risky_attachments": [],
     "double_extension_files": []
   },
+  "virustotal": {
+    "enabled": false,
+    "hits": []
+  },
   "header_issues": [],
   "keyword_hits": [],
   "domain_checks": {
@@ -45,6 +49,8 @@
     "reply_to_mismatch": false,
     "return_path_mismatch": false
   },
+  "html_links": [],
+  "hidden_link_mismatches": [],
   "assessment": {
     "score": 0,
     "verdict": "LOW",
