@@ -1,8 +1,17 @@
 import argparse
 from pathlib import Path
 from email.utils import parseaddr
+
 from reporter import save_json_report, save_text_report, save_csv_summary
-from parser import load_email, get_basic_headers, extract_bodies, extract_urls, extract_attachments, check_hidden_link_text_mismatch
+from parser import (
+    load_email,
+    get_basic_headers,
+    extract_bodies,
+    extract_urls,
+    extract_attachments,
+    extract_html_links,
+)
+from virustotal import get_vt_api_key, enrich_attachments_with_virustotal
 from indicators import (
     get_authentication_results,
     check_domain_mismatch,
@@ -10,10 +19,11 @@ from indicators import (
     check_attachment_risk,
     check_url_signals,
     check_header_signals,
-    score_email
+    check_hidden_link_text_mismatch,
+    check_virustotal_hits,
+    score_email,
 )
 from dns_checks import get_spf_record, get_dmarc_record, resolve_mx
-from reporter import save_json_report, save_text_report
 
 
 def get_sender_domain(from_header):
@@ -37,9 +47,15 @@ def analyze_email(file_path, output_dir):
     headers = get_basic_headers(msg)
     bodies = extract_bodies(msg)
     urls = extract_urls(bodies["text"], bodies["html"])
+
     attachments = extract_attachments(msg)
+    vt_api_key = get_vt_api_key()
+    if attachments:
+        attachments = enrich_attachments_with_virustotal(attachments, vt_api_key)
+
     html_links = extract_html_links(bodies["html"])
     hidden_link_mismatches = check_hidden_link_text_mismatch(html_links)
+
     auth = get_authentication_results(msg)
     mismatch = check_domain_mismatch(
         headers["from"],
@@ -49,6 +65,7 @@ def analyze_email(file_path, output_dir):
 
     keyword_hits = suspicious_keywords(bodies["text"], headers["subject"])
     attachment_risk = check_attachment_risk(attachments)
+    vt_hits = check_virustotal_hits(attachments)
 
     sender_domain = get_sender_domain(headers["from"])
     url_signals = check_url_signals(urls, sender_domain)
@@ -67,6 +84,7 @@ def analyze_email(file_path, output_dir):
         url_signals=url_signals,
         header_issues=header_issues,
         hidden_link_mismatches=hidden_link_mismatches,
+        vt_hits=vt_hits,
         has_html=bool(bodies["html"])
     )
 
@@ -89,13 +107,16 @@ def analyze_email(file_path, output_dir):
         "url_signals": url_signals,
         "attachments": attachments,
         "attachment_risk": attachment_risk,
+        "virustotal": {
+            "enabled": bool(vt_api_key),
+            "hits": vt_hits
+        },
         "header_issues": header_issues,
         "keyword_hits": keyword_hits,
         "domain_checks": mismatch,
         "html_links": html_links,
         "hidden_link_mismatches": hidden_link_mismatches,
         "assessment": scoring,
-
     }
 
     input_path = Path(file_path)
@@ -155,11 +176,12 @@ def main():
             print("Error:", str(e))
 
     print("\nCompleted analysis for", len(reports), "file(s)")
-    
+
     if reports:
         summary_file = Path(args.output) / "analysis_summary.csv"
         save_csv_summary(reports, summary_file)
         print("Saved CSV summary:", summary_file)
+
 
 if __name__ == "__main__":
     main()

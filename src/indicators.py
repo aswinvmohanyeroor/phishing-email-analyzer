@@ -155,7 +155,7 @@ def check_header_signals(headers):
     return issues
 
 
-def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals, header_issues, hidden_link_mismatches, has_html):
+def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals, header_issues, hidden_link_mismatches, vt_hits, has_html):
     score = 0
     reasons = []
 
@@ -190,6 +190,10 @@ def score_email(auth, mismatch, urls, keyword_hits, attachment_risk, url_signals
     if attachment_risk["risky_attachments"]:
         score += 25
         reasons.append("Risky attachment extension found")
+
+    if vt_hits:
+        score += 30
+        reasons.append("VirusTotal flagged one or more attachment hashes")
 
     if attachment_risk["double_extension_files"]:
         score += 15
@@ -267,3 +271,18 @@ def check_hidden_link_text_mismatch(html_links):
                 })
 
     return mismatches
+def check_virustotal_hits(attachments):
+    hits = []
+
+    for item in attachments:
+        vt = item.get("virustotal", {})
+        if vt.get("status") == "found":
+            if vt.get("malicious", 0) > 0 or vt.get("suspicious", 0) > 0:
+                hits.append({
+                    "filename": item.get("filename", ""),
+                    "sha256": item.get("sha256", ""),
+                    "malicious": vt.get("malicious", 0),
+                    "suspicious": vt.get("suspicious", 0)
+                })
+
+    return hits
